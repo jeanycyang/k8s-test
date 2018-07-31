@@ -1,0 +1,15 @@
+{
+  "name": "k8stest",
+  "version": "1.0.0",
+  "description": "try kubernetes",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"tested!\" && exit 0",
+    "start": "node server.js"
+  },
+  "author": "Jean Yang",
+  "license": "MIT",
+  "dependencies": {
+    "express": "^4.16.3"
+  }
+}

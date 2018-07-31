@@ -1,0 +1,26 @@
+sudo: required
+
+language: node_js
+
+cache:
+  directories:
+    - node_modules
+
+node_js:
+  - 8.11.3
+
+services:
+  - docker
+
+before_install:
+  - docker build -t jeanycyang/nodeapp .
+  - docker run -d -p 127.0.0.1:8080:8080 jeanycyang/nodeapp
+  - docker ps -a
+
+script:
+  - npm test
+
+after_success:
+  - docker login -u $DOCKER_USER -p $DOCKER_PASS
+  - export REPO=jeanycyang/nodeapp
+  - docker push $REPO
