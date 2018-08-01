@@ -1,0 +1,63 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: nginx-config
+data:
+  nginx.conf: |
+    worker_processes auto;
+
+    events {
+      worker_connections  4096;
+    }
+
+    http {
+     upstream nodejs_upstream {
+        server localhost:8080;
+     }
+     server {
+          listen 80;
+          server_name my_nodejs_server;
+
+          location / {
+            proxy_pass http://nodejs_upstream;
+            proxy_http_version 1.1;
+            proxy_set_header Upgrade $http_upgrade;
+            proxy_set_header Connection 'upgrade';
+            proxy_set_header Host $host;
+            proxy_cache_bypass $http_upgrade;
+          }
+      }
+    }
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: main-deployment
+  labels:
+    app: main
+spec:
+  selector:
+    matchLabels:
+      app: main
+  template:
+    metadata:
+      labels:
+        app: main
+    spec:
+      containers:
+      - name: nodeapp
+        image: jeanycyang/nodeapp
+        ports:
+        - containerPort: 8080
+      - name: nginx-proxy
+        image: nginx:1.15.2-alpine
+        volumeMounts:
+        - name: nginx-config
+          mountPath: /etc/nginx/nginx.conf
+          subPath: nginx.conf
+        ports:
+        - containerPort: 80
+      volumes:
+      - name: nginx-config
+        configMap:
+          name: nginx-config
