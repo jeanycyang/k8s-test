@@ -49,6 +49,12 @@ spec:
         image: jeanycyang/nodeapp
         ports:
         - containerPort: 8080
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 8080
+          initialDelaySeconds: 5
+          periodSeconds: 10
       - name: nginx-proxy
         image: nginx:1.15.2-alpine
         volumeMounts:

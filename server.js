@@ -12,5 +12,12 @@ app.get('/health', (req, res) => {
   res.send('I\'m healthy!');
 });
 
+app.get('/crashme', (req, res) => {
+  // Oh no!
+  console.error('oh no!');
+  process.exit(500);
+  res.sendStatus(500);
+})
+
 app.listen(PORT, HOST);
 console.log(`Running on http://${HOST}:${PORT}`);
